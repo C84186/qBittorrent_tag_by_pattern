@@ -1,5 +1,6 @@
 # If unset, or == '*', matches any.  
 # Otherwise, only applies rule to a single category ( I haven't implemented making this a list)
+# special value, '_uncategorized_only' only matches torrents w/o a category
 category: '*'
 flag_confused_if_together:
 # Add a tag marking that something confusing happened if a torrent meets multiple criteria in this list 
