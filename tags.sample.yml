@@ -1,0 +1,30 @@
+flag_confused_if_together:
+  - comic
+  - software
+  - video
+labels:
+  - name: video
+    extension:
+      - mp4
+      - avi
+      - mov
+      - wmv
+      - avchd
+      - flv
+      - mkv
+      - webm
+      - mpg
+    regex: ~
+      # - '.*[[. ]720p[\]. ].*'
+      # - '.*[[. ]1080[\]. ]p.*'
+      # - '.*[[. ]480p[\]. ]'
+  - name: comic
+    extension:
+      - zip
+      - cbz
+      - rar
+      - cbr
+      - cb7
+    regex:
+      - '(?i).*\[English\].*'
+
