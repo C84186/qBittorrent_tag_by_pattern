@@ -1,10 +1,16 @@
+# If unset, or == '*', matches any.  
+# Otherwise, only applies rule to a single category ( I haven't implemented making this a list)
+category: '*'
 flag_confused_if_together:
+# Add a tag marking that something confusing happened if a torrent meets multiple criteria in this list 
   - comic
   - software
   - video
 labels:
   - name: video
+    # output name for tag
     extension:
+    # A list of ext
       - mp4
       - avi
       - mov
@@ -25,6 +31,9 @@ labels:
       - rar
       - cbr
       - cb7
-    regex:
+    regex: 
+    # Standard python regex. 
+    # full matches only, so if you want a partial match, you need to wrap in .* on both sides. 
+    # use single quotes, 
+    # in yml you have to escape double quoted backslashes ( "\\s" vs '\s' )
       - '(?i).*\[English\].*'
-
