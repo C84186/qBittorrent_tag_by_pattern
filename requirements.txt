@@ -1,2 +1,7 @@
 qbittorrent-api
 pyyaml
+
+torrent_parser
+
+click
+
