@@ -1,10 +1,6 @@
-import os, re, typing, click, bencodepy, json, binascii
+import os, re, typing, click, bencodepy, json, binascii 
 from pathlib import Path
-
-
-keywords = {
-    "qBt=category"
-        }
+from torrentool.api import Torrent
 
 pathlike_hint = typing.Union[str, bytes, os.PathLike]
 
@@ -34,22 +30,31 @@ def convert(data):
     
     return data
 
-def parse_fastresume(path: pathlike_hint) -> typing.Optional[dict]:
-    path = Path(path)
+def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
+    fastresume_path = Path(fastresume_path)
+
 
     out = {}
-    if path.suffix != ".fastresume": return None
+    if fastresume_path.suffix != ".fastresume": return None
 
-    out['torrent_hash'] = path.name
+    out['torrent_hash'] = fastresume_path.stem
 
-    with open(path, "rb") as f:
-        content = bencodepy.bread(f)
+    with open(fastresume_path, "rb") as f:
+        fastresume = bencodepy.bread(f)
 
+    fastresume = convert(fastresume)
+    
+    print(json.dumps(fastresume, sort_keys = True, indent = 4))
 
-    content = convert(content)
+    out['fastresume'] = fastresume
 
-    print(json.dumps(content, sort_keys=True, indent=4))
-    return None
+    torrent_path = fastresume_path.with_suffix('.torrent')
+
+    torrent = Torrent.from_file(torrent_path) 
+
+    out['torrent'] = torrent
+    #  output_path = Path(fastresume['save_path']) / torrent['info']
+    return out
 
 @click.command()
 @click.option('--command', default = 'parse_fastresume', help = "what to do")
