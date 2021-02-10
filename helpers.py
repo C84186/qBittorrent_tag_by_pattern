@@ -1,8 +1,9 @@
+import defs
 import yaml, qbittorrentapi
 
 from pathlib import PureWindowsPath, PurePosixPath
 
-default_creds = {'username' : None, 'password' : None, 'hostname': 'localhost', 'port' : 8080}
+default_creds = defs.default_creds
 
 def connect_client(credentials_path):
 
@@ -43,7 +44,7 @@ def get_remote_hashes(qbt_client):
 
      return out
 
-def read_path_spec(spec_file_path = ".user_credentials"):
+def read_path_spec(spec_file_path = defs.credentials_path):
     
     with open(spec_file_path, "r") as f:
         cfg = yaml.load(f)
