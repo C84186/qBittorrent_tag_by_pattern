@@ -3,5 +3,7 @@ pyyaml
 
 torrent_parser
 
+bencode.py
+
 click
 
