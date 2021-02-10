@@ -1,8 +1,7 @@
 qbittorrent-api
 pyyaml
 
-torrent_parser
-
+torrentool
 bencode.py
 
 click
