@@ -1,3 +1,4 @@
+import helpers
 import qbittorrentapi
 import json, yaml, re
 
@@ -8,19 +9,12 @@ tag_hashes = {}
 dry_run = False 
 
 credentials_path = '.user_credentials.yml'
-creds = None
 
-host = 'localhost'
-port = 8080
+qbt_client = helpers.connect_client(credentials_path)
 
 tag_for_invalid_overlap = "INVALID_OVERLAP_OF_TAGS"
 
 
-with open(credentials_path) as f:
-    creds = yaml.load(f)
-
-    if 'username' not in creds or 'password' not in creds:
-        print(f"Please supply {credentials_path} with username and password fields")
 
 with open('tags.yml') as f:
     tag_map = yaml.load(f)
@@ -35,15 +29,7 @@ if 'category' in tag_map:
     if tag_map['category'] != '*':
         category = tag_map['category']
 
-# instantiate a Client using the appropriate WebUI configuration
-qbt_client = qbittorrentapi.Client(host=host, port=port, username=creds['username'], password=creds['password'])
 
-# the Client will automatically acquire/maintain a logged in state in line with any request.
-# therefore, this is not necessary; however, you many want to test the provided login credentials.
-try:
-    qbt_client.auth_log_in()
-except qbittorrentapi.LoginFailed as e:
-    print(e)
 
 # display qBittorrent info
 print(f'qBittorrent: {qbt_client.app.version}')
