@@ -29,6 +29,17 @@ Examples of this include:
   - In this instance, `remote:` bindings will be useful.
 - If you are migrating from qBittorrent for windows to another machine, but you run this program via WSL
   - In this instance, `local` bindings will be useful.
+  - If a path is a windows path, you have to define this with more complexity - 
+    - Instead of 
+      ```yaml
+      context: 'C:\\path\to\asset'
+      ```
+    - Use:
+      ```yaml
+      context:
+        os: windows
+        path: 'C:\\path\to\asset'
+      ```
 
 - `local:` refers to the current system/the source paths.
 - `remote:` refers to the destination system/ destination paths.
