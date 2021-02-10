@@ -1,20 +1,19 @@
-import helpers
+import helpers, defs
+
 import qbittorrentapi
 import json, yaml, re
-
 from pathlib import Path
 
 tag_hashes = {}
 
 dry_run = True 
 
-credentials_path = '.user_credentials.yml'
+credentials_path = defs.credentials_path
+tag_for_invalid_overlap = defs.tag_for_invalid_overlap
+
+uncat_kw = defs.uncategorized_kw
 
 qbt_client = helpers.connect_client(credentials_path)
-
-tag_for_invalid_overlap = "INVALID_OVERLAP_OF_TAGS"
-
-
 
 with open('tags.yml') as f:
     tag_map = yaml.load(f)
@@ -23,7 +22,6 @@ with open('tags.yml') as f:
 exclusive_labels = set()
 if 'flag_confused_if_together' in tag_map: exclusive_labels = set(tag_map['flag_confused_if_together'])
 
-uncat_kw = '_uncategorized_only'
 category = None
 if 'category' in tag_map:
     if tag_map['category'] != '*':
