@@ -6,7 +6,7 @@ from pathlib import Path
 
 tag_hashes = {}
 
-dry_run = False 
+dry_run = True 
 
 credentials_path = '.user_credentials.yml'
 
