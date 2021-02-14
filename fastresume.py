@@ -1,6 +1,8 @@
-import os, re, typing, click, bencodepy, json, binascii 
+import os, re, typing, click, bencodepy, json, binascii, logging
 from pathlib import Path
 from torrentool.api import Torrent
+
+L = logging.getLogger(__name__)
 
 pathlike_hint = typing.Union[str, bytes, os.PathLike]
 
@@ -45,7 +47,7 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
         with open(fastresume_path, "rb") as f:
             fastresume = bencodepy.bread(f)
     except bencodepy.exceptions.BencodeDecodeError:
-        print(f"{out['torrent_hash']} failed to decode!")
+        L.warn(f"{out['torrent_hash']} failed to decode!")
         return None
 
     fastresume = convert(fastresume)
@@ -61,7 +63,7 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
         torrent = Torrent.from_file(torrent_path) 
         out['torrent'] = torrent
     except FileNotFoundError:
-        print(f"For {out['torrent_hash']}, no corresponding .torrent!")
+        L.warn(f"For {out['torrent_hash']}, no corresponding .torrent!")
 
 
     #  output_path = Path(fastresume['save_path']) / torrent['info']
