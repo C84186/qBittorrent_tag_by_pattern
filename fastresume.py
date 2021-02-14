@@ -35,25 +35,42 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
 
 
     out = {}
+    
+    out['torrent_hash'] = fastresume_path.stem 
+
+    #  print(json.dumps(out, sort_keys = True, indent = 4))
     if fastresume_path.suffix != ".fastresume": return None
 
-    out['torrent_hash'] = fastresume_path.stem
-
-    with open(fastresume_path, "rb") as f:
-        fastresume = bencodepy.bread(f)
+    try:
+        with open(fastresume_path, "rb") as f:
+            fastresume = bencodepy.bread(f)
+    except bencodepy.exceptions.BencodeDecodeError:
+        print(f"{out['torrent_hash']} failed to decode!")
+        return None
 
     fastresume = convert(fastresume)
     
-    print(json.dumps(fastresume, sort_keys = True, indent = 4))
+    #  print(json.dumps(fastresume, sort_keys = True, indent = 4))
 
     out['fastresume'] = fastresume
 
+    out['torrent'] = None
     torrent_path = fastresume_path.with_suffix('.torrent')
 
-    torrent = Torrent.from_file(torrent_path) 
+    try:
+        torrent = Torrent.from_file(torrent_path) 
+        out['torrent'] = torrent
+    except FileNotFoundError:
+        print(f"For {out['torrent_hash']}, no corresponding .torrent!")
 
-    out['torrent'] = torrent
+
     #  output_path = Path(fastresume['save_path']) / torrent['info']
+    return out
+
+def parse_all_fastresumes(bt_backup_path):
+    bt_backup_path = Path(bt_backup_path)
+
+    out = [parse_fastresume(p) for p in bt_backup_path.iterdir() if parse_fastresume(p)]
     return out
 
 @click.command()
@@ -61,7 +78,6 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
 @click.option('--path', default = '.fastresume', help = "path of fastresume")
 def cli(command: str, path: pathlike_hint):
     if command == "parse_fastresume": parse_fastresume(path)
-
 
 
 if __name__ == "__main__":
