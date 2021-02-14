@@ -6,3 +6,5 @@ bencode.py
 
 click
 
+paramiko
+
