@@ -1,7 +1,6 @@
 import defs
 import yaml, qbittorrentapi
 
-from pathlib import PureWindowsPath, PurePosixPath
 
 default_creds = defs.default_creds
 
