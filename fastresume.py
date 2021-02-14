@@ -6,19 +6,8 @@ L = logging.getLogger(__name__)
 
 pathlike_hint = typing.Union[str, bytes, os.PathLike]
 
-#  arr = os.listdir('.')
 
 pattern = re.compile(r'save_path\d+:(.+).9:seed_mode')
-
-#  for fpath in arr:
-    #  if fpath.endswith(".fastresume"):
-        #  with open(fpath, "rb") as f:
-            #  match = re.search(pattern, f.read())
-            #  if match:
-                #  save_path = match.groups()[0].decode('UTF-8')
-                #  torrent_hash = fpath.split(".")[0]
-                #  print("-", torrent_hash+":")
-                #  print("    "+save_path)
 
 
 def convert(data):
@@ -63,7 +52,7 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
         torrent = Torrent.from_file(torrent_path) 
         out['torrent'] = torrent
     except FileNotFoundError:
-        L.warn(f"For {out['torrent_hash']}, no corresponding .torrent!")
+        L.info(f"For {out['torrent_hash']}, no corresponding .torrent!")
 
 
     #  output_path = Path(fastresume['save_path']) / torrent['info']
