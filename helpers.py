@@ -4,7 +4,7 @@ import yaml, qbittorrentapi
 
 default_creds = defs.default_creds
 
-def connect_client(credentials_path):
+def connect_client(credentials_path = defs.credentials_path):
 
     with open(credentials_path) as f:
         creds = yaml.load(f)
@@ -44,7 +44,10 @@ def get_remote_hashes(qbt_client):
      return out
 
 
+def get_ssh_creds(creds_path = def.credentials_path):
+    with open(creds_path, 'r') as f:
+        creds = yaml.load(f)
 
-
-
+    creds = creds['ssh']
+    return creds
 

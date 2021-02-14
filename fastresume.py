@@ -61,7 +61,7 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
 def parse_all_fastresumes(bt_backup_path):
     bt_backup_path = Path(bt_backup_path)
 
-    out = [parse_fastresume(p) for p in bt_backup_path.iterdir() if parse_fastresume(p)]
+    out = [parse_fastresume(p) for p in bt_backup_path.iterdir()]
     return out
 
 @click.command()
