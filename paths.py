@@ -1,6 +1,5 @@
 import yaml, re
-from pathlib import PureWindowsPath, PurePosixPath
-
+from pathlib import Path, PureWindowsPath, PurePosixPath
 import defs
 
 def read_path_spec(spec_file_path = defs.credentials_path):
@@ -32,7 +31,7 @@ def read_path_spec(spec_file_path = defs.credentials_path):
             print(f"expecting a dict for {k}")
             exit(1)
 
-        if set(specs[k].keys) != allowed_contexts:
+        if set(specs[k].keys()) != allowed_contexts:
             print(f"expecting {allowed_contexts} for {k}")
             exit(1)
 
@@ -50,7 +49,7 @@ def read_path_spec(spec_file_path = defs.credentials_path):
                     exit(1)
 
                 if specs[k][context]['os'].lower().startswith("w"):
-                    specs[k][context] = PureWindowsPath(specs[k][context])
+                    specs[k][context] = PureWindowsPath(specs[k][context]['path'])
                 else:
                     specs[k][context] = PurePosixPath(specs[k][context])
 
@@ -61,7 +60,7 @@ def translate_paths(fastresume_local_path, path_spec):
     out = {'local': None, "remote" : None}
     
     # For now we only use entry 0
-    entry = path_spec[0]
+    entry = path_spec
 
     windows_drive_pat = r'^[a-zA-Z]:\\'
 
@@ -74,15 +73,15 @@ def translate_paths(fastresume_local_path, path_spec):
 
     if not fastresume_local_path.is_relative_to(entry['local']['qbittorrent']):
         print(f"Unable to get {fast_resume_local_path} as relative to {path_spec_entry['local']['qbittorrent']}")
-        return out
+        return None
 
     relative_path = fastresume_local_path.relative_to(entry['local']['qbittorrent'])
 
-    transfer_local_path = pathlib.Path(entry['local']['transfer']) / relative_path
+    transfer_local_path = Path(entry['local']['transfer']) / relative_path
 
     out['local'] = transfer_local_path
 
-    transfer_remote_path = pathlib.Path(entry['remote']['transfer']) / relative_path
+    transfer_remote_path = Path(entry['remote']['transfer']) / relative_path
     
     out['remote'] = transfer_remote_path
 
@@ -93,5 +92,5 @@ def get_bt_backup_path(spec_file_path = defs.credentials_path):
     with open(spec_file_path, "r") as f:
         cfg = yaml.load(f)
     
-    return pathlib.Path(cfg['bt_backup_path'])
+    return Path(cfg['bt_backup_path'])
 
