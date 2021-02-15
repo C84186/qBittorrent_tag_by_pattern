@@ -2,18 +2,35 @@ import helpers, defs, paths, fastresume, ssh
 
 import qbittorrentapi, yaml, progressbar, paramiko
 from functools import partial
-import pathlib, logging, itertools
-dry_run = True
+import pathlib, logging, itertools, os
+dry_run = False
 
 L = logging.getLogger(__name__)
-
+logging.basicConfig(filename = 'out.log')
 path_specs = paths.read_path_spec()
 bt_backup_p = paths.get_bt_backup_path()
 
+def mkdir_p(sftp, remote_directory):
+    """Change to this directory, recursively making new folders if needed.
+    Returns True if any folders were created."""
+    if remote_directory == '/':
+        # absolute path so change directory to root
+        sftp.chdir('/')
+        return
+    if remote_directory == '':
+        # top-level relative directory must exist
+        return
+    try:
+        sftp.chdir(remote_directory) # sub-directory exists
+    except IOError:
+        dirname, basename = os.path.split(remote_directory.rstrip('/'))
+        mkdir_p(sftp, dirname) # make parent directories
+        sftp.mkdir(basename) # sub-directory missing, so created it
+        sftp.chdir(basename)
+        return True
 
-
-def update_progress(total_transferred, total_size, progress = None):
-    if progress: progress.update(total_transferred)
+def update_progress(total_transferred, total_size, progress = None, local_path = None):
+    if progress: progress.update(total_transferred, local_path = local_path)
 
 def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs = paths.read_path_spec()):
     counts = {
@@ -26,7 +43,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
 
     for fr in fastresume_list:
         counts['total_tried'] += 1
-        print(counts)
+        L.info(counts)
         if not fr:
             counts['fastresume_problem'] += 1
             continue
@@ -77,18 +94,19 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             if dry_run: continue
             
             L.info(f"Sending: {file_path_local} => {file_path_remote}")
-            print(f"Sending: {file_path_local} => {file_path_remote}")
+            #  print(f"Sending: {file_path_local} => {file_path_remote}")
             
 
-            progress_widgets = [progressbar.DataSize(), progressbar.FileTransferSpeed(), progressbar.Bar()]
-            with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
-                updater = partial(update_progress, progress = progress)
+            progress_widgets = [progressbar.DataSize(), progressbar.FileTransferSpeed(), progressbar.Bar(), progressbar.Variable('local_path')]
+            with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length, redirect_stdout = True) as progress:
+                updater = partial(update_progress, progress = progress, local_path = str(rename_path_rel))
 
-                remote_parent = file_path_remote.parent
                 try:
-                    sftp.lstat(str(remote_parent))
+
+                    remote_parent = file_path_remote.parent
+                    stat = sftp.lstat(str(remote_parent))
                 except FileNotFoundError:
-                    sftp.mkdir(str(remote_parent))
+                    mkdir_p(sftp, str(remote_parent))
 
                 sftp.put(str(file_path_local), str(file_path_remote), callback = updater, confirm = True)
 
@@ -97,7 +115,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
         try:
             with open(fr['torrent_path'], "rb") as torrent_file:
                 status = qbt_client.torrents_add(torrent_files = {fr['torrent'].name : torrent_file}, category = fr['fastresume']['qBt-category'])
-                print(status)
+                L.info(status)
         except qbittorrentapi.exceptions.UnsupportedMediaType415Error:
             L.error(f"{fr['torrent'].name} failed - UnsupportedMediaType, {fr['torrent'].get_magnet}")
             print(status)
@@ -135,5 +153,5 @@ with paramiko.SSHClient() as ssh_client:
     counts = transfer_fastresumes(fastresumes, remote_hashes, qbt_client, sftp_client, path_specs = path_specs)
 
 counts['before'] = n_fastresumes_b4
-
+counts['before_remote'] = n_fastresumes_b4_checking_remote
 print(f"{counts}")
