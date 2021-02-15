@@ -10,7 +10,6 @@ L = logging.getLogger(__name__)
 path_specs = paths.read_path_spec()
 bt_backup_p = paths.get_bt_backup_path()
 
-progress_widgets = [progressbar.DataSize, progressbar.FileTransferSpeed, progressbar.Bar]
 
 
 def update_progress(total_transferred, total_size, progress = None):
@@ -80,6 +79,8 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             L.info(f"Sending: {file_path_local} => {file_path_remote}")
             print(f"Sending: {file_path_local} => {file_path_remote}")
             
+
+            progress_widgets = [progressbar.DataSize(), progressbar.FileTransferSpeed(), progressbar.Bar()]
             with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
                 updater = partial(update_progress, progress = progress)
 
@@ -93,8 +94,13 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
 
         if dry_run: continue
 
-        with open(fr['torrent_path'], "rb") as torrent_file:
-            status = qbt_client.torrents_add(torrent_files = {fr['torrent'].name : torrent_file}, category = fr['fastresume']['qBt-category'])
+        try:
+            with open(fr['torrent_path'], "rb") as torrent_file:
+                status = qbt_client.torrents_add(torrent_files = {fr['torrent'].name : torrent_file}, category = fr['fastresume']['qBt-category'])
+                print(status)
+        except qbittorrentapi.exceptions.UnsupportedMediaType415Error:
+            L.error(f"{fr['torrent'].name} failed - UnsupportedMediaType, {fr['torrent'].get_magnet}")
+            print(status)
     return counts
 
 
@@ -108,10 +114,12 @@ remote_hashes = helpers.get_remote_hashes(qbt_client)
 ssh_details = helpers.get_ssh_creds()
 
 n_fastresumes_b4 = len(fastresumes)
-
 fastresumes = fastresume.filter_for_complete(fastresumes)
-fastresumes = sorted(fastresumes, key = lambda i: (i['fastresume']['total_downloaded']))
 
+n_fastresumes_b4_checking_remote = len(fastresumes)
+fastresumes = [fr for fr in fastresumes if not fr['torrent_hash'] in remote_hashes['finished']]
+
+fastresumes = sorted(fastresumes, key = lambda i: (i['fastresume']['total_downloaded']))
 
 with paramiko.SSHClient() as ssh_client:
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
