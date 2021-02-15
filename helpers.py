@@ -1,6 +1,7 @@
 import defs
 import yaml, qbittorrentapi
 
+from pathlib import Path
 
 default_creds = defs.default_creds
 
@@ -49,5 +50,7 @@ def get_ssh_creds(creds_path = def.credentials_path):
         creds = yaml.load(f)
 
     creds = creds['ssh']
+
+    creds['key_file_path'] = map(lambda p : Path(p).expanduser(), creds['key_file_path'])
     return creds
 
