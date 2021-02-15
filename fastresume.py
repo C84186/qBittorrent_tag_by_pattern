@@ -27,7 +27,8 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
 
     out = {}
     
-    out['torrent_hash'] = fastresume_path.stem 
+    out['torrent_hash'] = fastresume_path.stem
+    out['fastresume_path'] = fastresume_path
 
     #  print(json.dumps(out, sort_keys = True, indent = 4))
     if fastresume_path.suffix != ".fastresume": return None
@@ -48,6 +49,7 @@ def parse_fastresume(fastresume_path: pathlike_hint) -> typing.Optional[dict]:
     out['torrent'] = None
     torrent_path = fastresume_path.with_suffix('.torrent')
 
+    out['torrent_path'] = torrent_path
     try:
         torrent = Torrent.from_file(torrent_path) 
         out['torrent'] = torrent
