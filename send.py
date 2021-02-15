@@ -1,6 +1,6 @@
-import helpers, defs, paths, fastresume
+import helpers, defs, paths, fastresume, ssh
 
-import qbittorrentapi, ssh, yaml
+import qbittorrentapi, yaml, progressbar
 import pathlib, logging, itertools
 
 L = logging.getLogger(__name__)
