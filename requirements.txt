@@ -7,4 +7,5 @@ bencode.py
 click
 
 paramiko
+progressbar2
 
