@@ -79,7 +79,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             if dry_run: continue
             
             with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
-                sftp.put(file_path_local, file_path_remote, callback = update_progress, confirm = True)
+                sftp.put(str(file_path_local), str(file_path_remote), callback = update_progress, confirm = True)
 
         if dry_run: continue
 
