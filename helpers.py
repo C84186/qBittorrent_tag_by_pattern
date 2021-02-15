@@ -45,7 +45,7 @@ def get_remote_hashes(qbt_client):
      return out
 
 
-def get_ssh_creds(creds_path = def.credentials_path):
+def get_ssh_creds(creds_path = defs.credentials_path):
     with open(creds_path, 'r') as f:
         creds = yaml.load(f)
 
