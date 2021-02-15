@@ -26,6 +26,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
 
     for fr in fastresume_list:
         counts['total_tried'] += 1
+        print(counts)
         if not fr:
             counts['fastresume_problem'] += 1
             continue
