@@ -93,7 +93,8 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
 
         if dry_run: continue
 
-        qbt_client.torrents_add(urls = fr['torrent'].magnet_link, category = fr['fastresume']['qBt-category'])
+        with open(fr['torrent_path'], "rb") as torrent_file:
+            status = qbt_client.torrents_add(torrent_files = {fr['torrent'].name : torrent_file}, category = fr['fastresume']['qBt-category'])
     return counts
 
 
