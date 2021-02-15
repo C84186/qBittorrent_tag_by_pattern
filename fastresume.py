@@ -65,7 +65,7 @@ def parse_all_fastresumes(bt_backup_path):
     return out
 
 def filter_for_complete(fastresume_list):
-    out = [fr for fr in fastresume_list if fr['fastresume']['completed_time'] > 0]
+    out = [fr for fr in fastresume_list if fr and fr['fastresume']['completed_time'] > 0]
 
     return out
     
