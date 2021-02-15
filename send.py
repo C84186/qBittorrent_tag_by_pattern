@@ -1,6 +1,7 @@
 import helpers, defs, paths, fastresume, ssh
 
 import qbittorrentapi, yaml, progressbar, paramiko
+from functools import partial
 import pathlib, logging, itertools
 dry_run = True
 
@@ -62,8 +63,6 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             file_path_local = transfer_paths['local'] / rename_path_rel
             file_path_remote = transfer_paths['remote'] / file_path_rel
 
-            L.info(f"Sending: {file_path_local} => {file_path_remote}")
-
             if not file_path_local.exists():
                 L.warn(f"File: {file_path_local} not found!")
                 continue
@@ -78,8 +77,19 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
 
             if dry_run: continue
             
+            L.info(f"Sending: {file_path_local} => {file_path_remote}")
+            print(f"Sending: {file_path_local} => {file_path_remote}")
+            
             with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
-                sftp.put(str(file_path_local), str(file_path_remote), callback = update_progress, confirm = True)
+                updater = partial(update_progress, progress = progress)
+
+                remote_parent = file_path_remote.parent
+                try:
+                    sftp.lstat(str(remote_parent))
+                except FileNotFoundError:
+                    sftp.mkdir(str(remote_parent))
+
+                sftp.put(str(file_path_local), str(file_path_remote), callback = updater, confirm = True)
 
         if dry_run: continue
 
