@@ -1,13 +1,13 @@
 import helpers, defs, paths, fastresume, ssh
 
-import qbittorrentapi, yaml, progressbar
+import qbittorrentapi, yaml, progressbar, paramiko
 import pathlib, logging, itertools
+dry_run = True
 
 L = logging.getLogger(__name__)
 
 path_specs = paths.read_path_spec()
 bt_backup_p = paths.get_bt_backup_path()
-
 
 progress_widgets = [progressbar.DataSize, progressbar.FileTransferSpeed, progressbar.Bar]
 
@@ -15,7 +15,7 @@ progress_widgets = [progressbar.DataSize, progressbar.FileTransferSpeed, progres
 def update_progress(total_transferred, total_size, progress = None):
     if progress: progress.update(total_transferred)
 
-def transfer_fastresumes(fastresume_list, remote_hashes, sftp_client, path_specs = paths.read_path_spec()):
+def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs = paths.read_path_spec()):
     counts = {
         'finished': 0,
         'progressing': 0,
@@ -30,12 +30,14 @@ def transfer_fastresumes(fastresume_list, remote_hashes, sftp_client, path_specs
             counts['fastresume_problem'] += 1
             continue
         if not 'torrent' in fr or not fr['torrent']:
+            L.warn(f"Missing corresponding torrent! {fr['torrent_hash']}")
             counts['missing_local_torrent'] += 1
             continue
 
         for k in ['finished', 'progressing']:
             if fr['torrent_hash'] in remote_hashes[k]: counts[k] += 1
             L.info(f"{fr['torrent_hash']} for in {k}, skipping!")
+            continue
 
         transfer_paths = paths.translate_paths(fr['fastresume']['save_path'], path_specs)
 
@@ -73,8 +75,16 @@ def transfer_fastresumes(fastresume_list, remote_hashes, sftp_client, path_specs
                 continue
             L.info(f"for {file_path_local} sizes seem to match")
 
-            #with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
-                # sftp.put(file_path_local, file_path_remote, callback = update_progress, confirm = True)
+            if dry_run: continue
+            
+            with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length) as progress:
+                sftp.put(file_path_local, file_path_remote, callback = update_progress, confirm = True)
+
+        if dry_run: continue
+
+        qbt_client.torrents_add(urls = fr['torrent'].magnet_link, category = fr['fastresume']['qBt-category'])
+    return counts
+
 
 
 fastresumes = fastresume.parse_all_fastresumes(bt_backup_p)
@@ -84,19 +94,26 @@ qbt_client = helpers.connect_client()
 remote_hashes = helpers.get_remote_hashes(qbt_client)
 
 ssh_details = helpers.get_ssh_creds()
-ssh_client = paramiko.SSHClient()
-ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-ssh_client.connect(
-    hostname = ssh_details['hostname'],
-    port = ssh_details['port'],
-    username = ssh_details['username'],
-    key_filename = map(str, ssh_details['key_file_path']))
+n_fastresumes_b4 = len(fastresumes)
 
-sftp = ssh_client.open_sftp()
+fastresumes = fastresume.filter_for_complete(fastresumes)
+fastresumes = sorted(fastresumes, key = lambda i: (i['fastresume']['total_downloaded']))
 
 
+with paramiko.SSHClient() as ssh_client:
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+    ssh_client.connect(
+        hostname = ssh_details['hostname'],
+        port = ssh_details['port'],
+        username = ssh_details['username'],
+        key_filename = map(str, ssh_details['key_file_path']))
 
+    sftp_client = ssh_client.open_sftp()
+
+    counts = transfer_fastresumes(fastresumes, remote_hashes, qbt_client, sftp_client, path_specs = path_specs)
+
+counts['before'] = n_fastresumes_b4
 
 print(f"{counts}")
