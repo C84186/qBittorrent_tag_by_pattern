@@ -81,12 +81,12 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             
 
             progress_widgets = [
-                progressbar.Variable('i'),
-                progressbar.Variable('n'),
+                progressbar.Variable('i', format = '{formatted_value}', width = 4, precision = 0),
+                progressbar.Variable('n', format = '/{formatted_value} ', width = 4, precision = 0),
                 progressbar.DataSize(),
                 progressbar.FileTransferSpeed(),
                 progressbar.Bar(),
-                progressbar.Variable('local_path')]
+                progressbar.Variable('local_path', format = '{formatted_value}')]
 
 
             path_progress = helpers.format_progress_path(rename_path_rel)
