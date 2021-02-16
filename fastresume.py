@@ -1,10 +1,10 @@
 import os, re, typing, click, bencodepy, json, binascii, logging
 from pathlib import Path
 from torrentool.api import Torrent
+from defs import pathlike_hint
 
 L = logging.getLogger(__name__)
 
-pathlike_hint = typing.Union[str, bytes, os.PathLike]
 
 
 pattern = re.compile(r'save_path\d+:(.+).9:seed_mode')
