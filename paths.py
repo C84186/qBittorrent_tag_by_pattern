@@ -1,4 +1,4 @@
-import yaml, re, logging
+import yaml, re, logging, os
 from pathlib import Path, PureWindowsPath, PurePosixPath
 import defs
 
@@ -96,3 +96,22 @@ def get_bt_backup_path(spec_file_path = defs.credentials_path):
     
     return Path(cfg['bt_backup_path'])
 
+
+def mkdir_p(sftp, remote_directory):
+    """Change to this directory, recursively making new folders if needed.
+    Returns True if any folders were created."""
+    if remote_directory == '/':
+        # absolute path so change directory to root
+        sftp.chdir('/')
+        return
+    if remote_directory == '':
+        # top-level relative directory must exist
+        return
+    try:
+        sftp.chdir(remote_directory) # sub-directory exists
+    except IOError:
+        dirname, basename = os.path.split(remote_directory.rstrip('/'))
+        mkdir_p(sftp, dirname) # make parent directories
+        sftp.mkdir(basename) # sub-directory missing, so created it
+        sftp.chdir(basename)
+        return True

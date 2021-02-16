@@ -12,24 +12,6 @@ logging.basicConfig(filename = 'out.log')
 path_specs = paths.read_path_spec()
 bt_backup_p = paths.get_bt_backup_path()
 
-def mkdir_p(sftp, remote_directory):
-    """Change to this directory, recursively making new folders if needed.
-    Returns True if any folders were created."""
-    if remote_directory == '/':
-        # absolute path so change directory to root
-        sftp.chdir('/')
-        return
-    if remote_directory == '':
-        # top-level relative directory must exist
-        return
-    try:
-        sftp.chdir(remote_directory) # sub-directory exists
-    except IOError:
-        dirname, basename = os.path.split(remote_directory.rstrip('/'))
-        mkdir_p(sftp, dirname) # make parent directories
-        sftp.mkdir(basename) # sub-directory missing, so created it
-        sftp.chdir(basename)
-        return True
 
 
 def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs = paths.read_path_spec()):
@@ -117,7 +99,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
                     remote_parent = file_path_remote.parent
                     stat = sftp.lstat(str(remote_parent))
                 except FileNotFoundError:
-                    mkdir_p(sftp, str(remote_parent))
+                    paths.mkdir_p(sftp, str(remote_parent))
 
                 sftp.put(str(file_path_local), str(file_path_remote), callback = updater, confirm = True)
 
