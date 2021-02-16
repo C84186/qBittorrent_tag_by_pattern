@@ -1,7 +1,7 @@
 import defs
 import yaml, qbittorrentapi
 
-from pathlib import Path
+from pathlib import Path, PurePath
 
 default_creds = defs.default_creds
 
@@ -68,15 +68,25 @@ def truncate_middle(s: str, n: int):
     n_2 = int(n) / 2 - 3
     # whatever's left
     n_1 = n - n_2 - 3
+
+    n_1 = int(n_1)
+    n_2 = int(n_2)
+
     return '{0}...{1}'.format(s[:n_1], s[-n_2:])
 
-def format_progress_path(local_path : defs.pathlike_hint, width_path : int = 30):
-    local_path = Path(local_path)
+def format_progress_path(local_path : defs.pathlike_hint, width_path : int = 30, width_total : int = 60):
+    local_path = PurePath(local_path)
     parts = local_path.parts
 
-    if len(parts) < 2: parts = ("") + (parts)
-
-    parts = map(lambda p : '/'+truncate_middle(p, width_path), parts)
+    parts = [ truncate_middle(p, width_path) for p in parts ]
     
-    return '\n'.join(parts)
+    rejoined = Path(*parts)
+    if len(str(rejoined)) > width_total:
+        if len(parts) > 2:
+            ends = parts[0] + parts[-1]
+            parts = parts[1:-1]
+            parts = [ p[0] for p in parts ]
+
+            rejoined = Path(*parts)
+    return str(rejoined)
 
