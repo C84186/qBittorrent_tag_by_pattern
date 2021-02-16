@@ -8,7 +8,7 @@ import pathlib, logging, itertools, os
 dry_run = False
 
 L = logging.getLogger(__name__)
-logging.basicConfig(filename = 'out.log')
+logging.basicConfig(level = logging.WARNING)
 path_specs = paths.read_path_spec()
 bt_backup_p = paths.get_bt_backup_path()
 
@@ -31,7 +31,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             counts['fastresume_problem'] += 1
             continue
         if not 'torrent' in fr or not fr['torrent']:
-            L.warn(f"Missing corresponding torrent! {fr['torrent_hash']}")
+            L.warning(f"Missing corresponding torrent! {fr['torrent_hash']}")
             counts['missing_local_torrent'] += 1
             continue
 
@@ -63,14 +63,14 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             file_path_remote = transfer_paths['remote'] / file_path_rel
 
             if not file_path_local.exists():
-                L.warn(f"File: {file_path_local} not found!")
+                L.warning(f"File: {file_path_local} not found!")
                 continue
 
             actual_path_size = file_path_local.stat().st_size
             expected_path_size = torrent_file.length
 
             if actual_path_size != expected_path_size:
-                L.warn(f"File Size Mismatch: {file_path_local} actual: {actual_path_size} != expected: {expected_path_size}")
+                L.warning(f"File Size Mismatch: {file_path_local} actual: {actual_path_size} != expected: {expected_path_size}")
                 continue
             L.info(f"for {file_path_local} sizes seem to match")
 
@@ -111,7 +111,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
                 L.info(status)
         except qbittorrentapi.exceptions.UnsupportedMediaType415Error:
             L.error(f"{fr['torrent'].name} failed - UnsupportedMediaType, {fr['torrent'].get_magnet}")
-            print(status)
+            #  print(status)
     return counts
 
 
