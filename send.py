@@ -92,7 +92,7 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             path_progress = helpers.format_progress_path(rename_path_rel)
 
             with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length, redirect_stdout = True) as progress:
-                updater = partial(helpers.update_progress, progress = progress, local_path = path_progress, n = counts['n_total'], i = counts['n_tried'])
+                updater = partial(helpers.update_progress, progress = progress, local_path = path_progress, n = counts['n_total'], i = counts['total_tried'])
 
                 try:
 
