@@ -74,19 +74,36 @@ def truncate_middle(s: str, n: int):
 
     return '{0}...{1}'.format(s[:n_1], s[-n_2:])
 
-def format_progress_path(local_path : defs.pathlike_hint, width_path : int = 30, width_total : int = 60):
-    local_path = PurePath(local_path)
-    parts = local_path.parts
+def format_progress_path(rel_path : defs.pathlike_hint, width_last : int = 40, width_first : int = 20, width_total : int = 60):
+    rel_path = PurePath(rel_path)
 
-    parts = [ truncate_middle(p, width_path) for p in parts ]
+    if len(str(rel_path)) <= width_total: return str(rel_path)
+    parts = rel_path.parts
     
-    rejoined = Path(*parts)
-    if len(str(rejoined)) > width_total:
-        if len(parts) > 2:
-            ends = parts[0] + parts[-1]
-            parts = parts[1:-1]
-            parts = [ p[0] for p in parts ]
+    if len(parts) > 2:
+        parts = list(parts)
+        ends = [parts[0], parts[-1]]
 
-            rejoined = Path(*parts)
+        parts = parts[1:-1]
+        parts = [ p[0] for p in parts ]
+
+        parts = [ends[0]] + parts + [ends[-1]]
+
+    rejoined = PurePath(*parts)
+
+    if len(str(rejoined)) <= width_total: return str(rejoined)
+
+    parts = rejoined.parts
+    parts = list(parts)
+    
+    ends = [parts[0]] + [parts[-1]]
+    parts = parts[1:-1]
+
+    ends[0]  = truncate_middle(ends[0], width_first)
+    ends[-1] = truncate_middle(ends[-1], width_last)
+
+    parts = [ends[0]] + list(parts) + [ends[-1]]
+
+    rejoined = PurePath(*parts)
     return str(rejoined)
 
