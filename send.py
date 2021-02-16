@@ -1,8 +1,10 @@
 import helpers, defs, paths, fastresume, ssh
+from defs import pathlike_hint
 
 import qbittorrentapi, yaml, progressbar, paramiko
 from functools import partial
 import pathlib, logging, itertools, os
+
 dry_run = False
 
 L = logging.getLogger(__name__)
@@ -29,8 +31,6 @@ def mkdir_p(sftp, remote_directory):
         sftp.chdir(basename)
         return True
 
-def update_progress(total_transferred, total_size, progress = None, local_path = None):
-    if progress: progress.update(total_transferred, local_path = local_path)
 
 def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs = paths.read_path_spec()):
     counts = {
@@ -38,7 +38,8 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
         'progressing': 0,
         'fastresume_problem': 0,
         'total_tried': 0,
-        'missing_local_torrent': 0
+        'missing_local_torrent': 0,
+        'n_total' : len(fastresume_list)
         }
 
     for fr in fastresume_list:
@@ -97,9 +98,19 @@ def transfer_fastresumes(fastresume_list, remote_hashes, qbt, sftp, path_specs =
             #  print(f"Sending: {file_path_local} => {file_path_remote}")
             
 
-            progress_widgets = [progressbar.DataSize(), progressbar.FileTransferSpeed(), progressbar.Bar(), progressbar.Variable('local_path')]
+            progress_widgets = [
+                progressbar.Variable('i'),
+                progressbar.Variable('n'),
+                progressbar.DataSize(),
+                progressbar.FileTransferSpeed(),
+                progressbar.Bar(),
+                progressbar.Variable('local_path')]
+
+
+            path_progress = helpers.format_progress_path(rename_path_rel)
+
             with progressbar.ProgressBar(widgets = progress_widgets , max_value = torrent_file.length, redirect_stdout = True) as progress:
-                updater = partial(update_progress, progress = progress, local_path = str(rename_path_rel))
+                updater = partial(helpers.update_progress, progress = progress, local_path = path_progress, n = counts['n_total'], i = counts['n_tried'])
 
                 try:
 

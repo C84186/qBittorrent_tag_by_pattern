@@ -54,3 +54,29 @@ def get_ssh_creds(creds_path = defs.credentials_path):
     creds['key_file_path'] = map(lambda p : Path(p).expanduser(), creds['key_file_path'])
     return creds
 
+
+
+def update_progress(total_transferred, total_size, progress = None, **kwargs):
+    if progress: progress.update(total_transferred, **kwargs)
+
+
+def truncate_middle(s: str, n: int):
+    if len(s) <= n:
+        # string is already short-enough
+        return s
+    # half of the size, minus the 3 .'s
+    n_2 = int(n) / 2 - 3
+    # whatever's left
+    n_1 = n - n_2 - 3
+    return '{0}...{1}'.format(s[:n_1], s[-n_2:])
+
+def format_progress_path(local_path : defs.pathlike_hint, width_path : int = 30):
+    local_path = Path(local_path)
+    parts = local_path.parts
+
+    if len(parts) < 2: parts = ("") + (parts)
+
+    parts = map(lambda p : '/'+truncate_middle(p, width_path), parts)
+    
+    return '\n'.join(parts)
+
