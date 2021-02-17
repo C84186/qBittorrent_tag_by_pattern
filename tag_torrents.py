@@ -35,6 +35,7 @@ print(f'qBittorrent Web API: {qbt_client.app.web_api_version}')
 for k,v in qbt_client.app.build_info.items(): print(f'{k}: {v}')
 
 untagged_hashes = set()
+skipped_hashes = set()
 
 all_torrents =  qbt_client.torrents_info()
 # retrieve and show all torrents
@@ -51,14 +52,18 @@ for torrent in all_torrents:
 
     current_tags = set()
     
-    print(torrent['category'])
+    print(f" category: {torrent['category']}")
 
-    process_torrent = True
+    process_torrent = False
     if category:
         if category == uncat_kw:
             if not 'category' in torrent or not torrent['category']: process_torrent = True
             elif torrent['category'] == category: process_torrent = True
 
+    if not process_torrent:
+        print(f" - skipping as {torrent['category']} != {category}")
+        skipped_hashes.add(torrent['hash'])
+        continue
     if process_torrent:
         for label in tag_map['labels']:
             print(f" - processing {label['name']}")
