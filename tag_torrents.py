@@ -55,10 +55,12 @@ for torrent in all_torrents:
     print(f" category: {torrent['category']}")
 
     process_torrent = False
-    if category:
+    if not category:
+        process_torrent = True
+    else:
         if category == uncat_kw:
             if not 'category' in torrent or not torrent['category']: process_torrent = True
-            elif torrent['category'] == category: process_torrent = True
+        elif torrent['category'] == category: process_torrent = True
 
     if not process_torrent:
         print(f" - skipping as {torrent['category']} != {category}")
