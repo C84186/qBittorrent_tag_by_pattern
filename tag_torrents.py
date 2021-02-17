@@ -64,45 +64,45 @@ for torrent in all_torrents:
         print(f" - skipping as {torrent['category']} != {category}")
         skipped_hashes.add(torrent['hash'])
         continue
-    if process_torrent:
-        for label in tag_map['labels']:
-            print(f" - processing {label['name']}")
-            if 'extension' in label and label['extension']:
-                print(f"  - processing extensions for {label['name']}")
-                
-                matched_extension = False
-                for ext in label['extension']:
-                    ext = f".{ext}".lower()
+    
+    for label in tag_map['labels']:
+        print(f" - processing {label['name']}")
+        if 'extension' in label and label['extension']:
+            print(f"  - processing extensions for {label['name']}")
+            
+            matched_extension = False
+            for ext in label['extension']:
+                ext = f".{ext}".lower()
 
-                    for path in current['files']:
-                        path = path['name']
-                        path = Path(path)
-                        if path.suffix.lower() == ext:
-                            print(f"    - found '{ext}' in {path.name}")
-                            current_tags.add(label['name'])
-
-                            matched_extension = True
-
-
-                            if not label['name'] in tag_hashes:
-                                tag_hashes[label['name']] = set()
-
-                            tag_hashes[label['name']].add(torrent['hash'])
-
-            if 'regex' in label and label['regex']:
-                print(f"  - processing regex for {label['name']}")
-
-                for re_pat in label['regex']:
-                    m = re.fullmatch(re_pat, torrent['name'])
-
-                    if m:
-                        print(f"    - found match for regex: '{re_pat}'")
+                for path in current['files']:
+                    path = path['name']
+                    path = Path(path)
+                    if path.suffix.lower() == ext:
+                        print(f"    - found '{ext}' in {path.name}")
                         current_tags.add(label['name'])
+
+                        matched_extension = True
+
 
                         if not label['name'] in tag_hashes:
                             tag_hashes[label['name']] = set()
 
                         tag_hashes[label['name']].add(torrent['hash'])
+
+        if 'regex' in label and label['regex']:
+            print(f"  - processing regex for {label['name']}")
+
+            for re_pat in label['regex']:
+                m = re.fullmatch(re_pat, torrent['name'])
+
+                if m:
+                    print(f"    - found match for regex: '{re_pat}'")
+                    current_tags.add(label['name'])
+
+                    if not label['name'] in tag_hashes:
+                        tag_hashes[label['name']] = set()
+
+                    tag_hashes[label['name']].add(torrent['hash'])
 
     exclusive_overlap = exclusive_labels.intersection(current_tags)
     print(current_tags)
