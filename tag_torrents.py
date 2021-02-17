@@ -133,6 +133,9 @@ for torrent in all_torrents:
         untagged_hashes.add(torrent['hash'])
 
 
+print(f"Number of untagged torrents: {len(untagged_hashes)}")
+print(f"Number of skipped torrents: {len(skipped_hashes)}")
+print(f"Number of torrents: {len(all_torrents)}")
     #  print(json.dumps(current, sort_keys=True, indent=4))
 
 #  for tag in tag_hashes:
@@ -140,6 +143,3 @@ for torrent in all_torrents:
 #
 #      if not dry_run: qbt_client.torrents_add_tags(tags = tag, torrent_hashes = list(tag_hashes[tag]))
 #
-#  print(f"Number of untagged torrents: {len(untagged_hashes)}")
-#
-#  print(f"Number of torrents: {len(all_torrents)}")
