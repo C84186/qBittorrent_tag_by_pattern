@@ -4,7 +4,6 @@ import qbittorrentapi
 import json, yaml, re
 from pathlib import Path
 
-tag_hashes = {}
 
 dry_run = True
 
@@ -34,6 +33,7 @@ def tag_torrents(torrent_list, qbt_client):
     print(f'qBittorrent Web API: {qbt_client.app.web_api_version}')
     for k,v in qbt_client.app.build_info.items(): print(f'{k}: {v}')
 
+    tag_hashes = {}
     untagged_hashes = set()
     skipped_hashes = set()
 
