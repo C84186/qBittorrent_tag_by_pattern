@@ -133,11 +133,11 @@ def tag_torrents(torrent_list, qbt_client):
 
             untagged_hashes.add(torrent['hash'])
 
+    print(f"Number of untagged torrents: {len(untagged_hashes)}")
+    print(f"Number of skipped torrents: {len(skipped_hashes)}")
+    print(f"Number of torrents: {len(torrent_list)}")
     return untagged_hashes, skipped_hashes
 
 if __name__ == "__main__":
     all_torrents =  qbt_client.torrents_info()
-    untagged_hashes, skipped_hashes = tag_torrents(torrent_list, qbt_client) 
-    print(f"Number of untagged torrents: {len(untagged_hashes)}")
-    print(f"Number of skipped torrents: {len(skipped_hashes)}")
-    print(f"Number of torrents: {len(all_torrents)}")
+    untagged_hashes, skipped_hashes = tag_torrents(all_torrents, qbt_client) 
