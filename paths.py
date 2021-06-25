@@ -23,7 +23,7 @@ def read_path_spec(spec_file_path = defs.credentials_path):
 
     allowed_keys = {'local', 'remote'}
     if set(specs.keys()) != allowed_keys:
-        L.error("invalid top level keys for path_bindings, {specs.keys}, expecting {allowed_keys}")
+        L.error(f"invalid top level keys for path_bindings, {specs.keys()}, expecting {allowed_keys}")
         exit(1)
 
     allowed_contexts = {'transfer', 'qbittorrent'}
