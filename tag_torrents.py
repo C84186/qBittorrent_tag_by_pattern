@@ -12,7 +12,6 @@ tag_for_invalid_overlap = defs.tag_for_invalid_overlap
 
 uncat_kw = defs.uncategorized_kw
 
-qbt_client = helpers.connect_client(credentials_path)
 
 with open('tags.yml') as f:
     tag_map = yaml.load(f)
@@ -139,5 +138,6 @@ def tag_torrents(torrent_list, qbt_client):
     return untagged_hashes, skipped_hashes
 
 if __name__ == "__main__":
+    qbt_client = helpers.connect_client(credentials_path)
     all_torrents =  qbt_client.torrents_info()
     untagged_hashes, skipped_hashes = tag_torrents(all_torrents, qbt_client) 
