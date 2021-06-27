@@ -5,7 +5,7 @@ import json, yaml, re
 from pathlib import Path
 
 
-dry_run = True
+dry_run = False
 
 credentials_path = defs.credentials_path
 tag_for_invalid_overlap = defs.tag_for_invalid_overlap
