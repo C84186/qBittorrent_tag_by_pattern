@@ -107,3 +107,7 @@ def format_progress_path(rel_path : defs.pathlike_hint, width_last : int = 40, w
     rejoined = PurePath(*parts)
     return str(rejoined)
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
