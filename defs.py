@@ -8,3 +8,7 @@ uncategorized_kw = '_uncategorized_only'
 default_creds = {'username' : None, 'password' : None, 'hostname': 'localhost', 'port' : 8080}
 
 pathlike_hint = typing.Union[str, bytes, os.PathLike]
+
+
+placeholder_tracker = "http://localhost:80/placeholder_tracker/"
+
