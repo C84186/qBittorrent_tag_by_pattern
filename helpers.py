@@ -1,5 +1,5 @@
 import defs
-import yaml, qbittorrentapi
+import yaml, typing, qbittorrentapi
 
 from pathlib import Path, PurePath
 
@@ -111,3 +111,31 @@ def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
+
+def torrent_has_all_tags(torrent, tags : typing.Optional[list]) -> bool:
+    torrent_tags = torrent.tags
+    if not torrent_tags: return False
+    if not tags: return True
+
+    torrent_tags = torrent_tags.split(", ")
+
+    all_contained = all(tag in torrent_tags for tag in tags)
+    return all_contained
+
+def torrent_lacks_any_tags(torrent, tags : typing.Optional[list]) -> bool:
+    torrent_tags = torrent.tags
+    if not torrent_tags: return True
+    if not tags: return True
+
+    torrent_tags = torrent_tags.split(", ")
+    
+    any_contained = any(tag in torrent_tags for tag in tags)
+    return not any_contained
+
+def filter_for_tags(torrent_list, has_tags : typing.Optional[list] = None, missing_tags : typing.Optional[list] = None) -> list:
+    out = torrent_list
+    out = [torrent for torrent in out if torrent_has_all_tags(torrent, has_tags)]
+
+    out = [torrent for torrent in out if torrent_lacks_any_tags(torrent, missing_tags)]
+
+    return out
