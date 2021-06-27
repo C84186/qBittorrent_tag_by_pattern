@@ -12,3 +12,9 @@ pathlike_hint = typing.Union[str, bytes, os.PathLike]
 
 placeholder_tracker = "http://localhost:80/placeholder_tracker/"
 
+builtin_trackers = [
+    "** [DHT] **",
+    "** [PeX] **",
+    "** [LSD] **",
+    placeholder_tracker
+]
