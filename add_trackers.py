@@ -1,7 +1,7 @@
 import helpers, defs
 
 import qbittorrentapi
-
+import logging
 L = logging.getLogger(__name__)
 
 credentials_path = defs.credentials_path
