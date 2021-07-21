@@ -1,7 +1,7 @@
 import helpers, defs
 
 import qbittorrentapi
-import json, yaml, re
+import json, yaml, re, logging
 from pathlib import Path
 
 
@@ -139,5 +139,6 @@ def tag_torrents(torrent_list, qbt_client):
 
 if __name__ == "__main__":
     qbt_client = helpers.connect_client(credentials_path)
-    all_torrents =  qbt_client.torrents_info()
+    logger = logging.getLogger()
+    all_torrents = helpers.retry_method(qbt_client.torrents_info, 5, logger)
     untagged_hashes, skipped_hashes = tag_torrents(all_torrents, qbt_client) 
