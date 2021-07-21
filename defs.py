@@ -18,3 +18,9 @@ builtin_trackers = [
     "** [LSD] **",
     placeholder_tracker
 ]
+
+tag_category = {
+    "get_prefix" : "_CAT_",
+    "set_prefix"  : "_SET_",
+    "uncat" : ""
+}
