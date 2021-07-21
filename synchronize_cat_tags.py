@@ -36,8 +36,8 @@ _SET_{category_name} :
 
 Special suffix:
 
-    _UNCAT:
-    * Corresponds to "_SET__UNCAT", "_CAT__UNCAT"
+    "" (Empty string):
+    * Corresponds to "_SET_", "_CAT_"
     * Reflects torrents with no category
 """
 
