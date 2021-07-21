@@ -111,7 +111,7 @@ def process_gets(qbt: qbittorrentapi.Client):
     # The empty category
     existing_cats["uncategorized"] = {"name" : uncat_kw}
 
-    match_pat = f"^{set_prefix}.*"
+    match_pat = f"^{get_prefix}.*"
     for key in existing_cats:
         cat = existing_cats[key]['name']
         L.info(f"cat:{key}:processing get tags for '{cat}'")
