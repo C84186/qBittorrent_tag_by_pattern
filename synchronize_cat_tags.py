@@ -80,7 +80,7 @@ def process_sets(qbt : qbittorrentapi.Client):
         if unsetter_tag in torrent_tags:
             L.info(f"{t.name} : Found {unsetter_tag}, removing cat")
             if not dry_run:
-                t.remove_tags(setter_tags.values())
+                if setter_tags.values(): t.remove_tags(setter_tags.values())
                 t.set_category(category = None)
             continue
 
@@ -90,7 +90,7 @@ def process_sets(qbt : qbittorrentapi.Client):
                 L.info(f"{t.name} : Found {tag}, assigning {cat}")
                 L.info(f"{t.name} : Removing {setter_tags.values()}")
                 if not dry_run:
-                    t.remove_tags(setter_tags.values())
+                    if setter_tags.values(): t.remove_tags(setter_tags.values())
                     # what if category doesnt exist yet? I dont know if this errors, 
                     # or just makes the category
                     t.set_category(category = cat)
