@@ -1,9 +1,21 @@
 import defs
 import yaml, typing, qbittorrentapi
+import logging
+from qbittorrentapi.exceptions import APIConnectionError
 
 from pathlib import Path, PurePath
 
 default_creds = defs.default_creds
+
+def retry_method(func, max_retries : int, L : logging.Logger, *args, **kwargs):
+
+    for i in range(max_retries):
+        try: out = func(*args, **kwargs)
+        except qbittorrentapi.exceptions.APIError as e:
+            L.warning("set:fetching_torrents:attempt %s Caught exception %s", i, e)
+        else: break
+    else: raise APIConnectionError(f"{func}:Max retries ({max_retries}) reached")
+    return out
 
 def connect_client(credentials_path = defs.credentials_path):
 
