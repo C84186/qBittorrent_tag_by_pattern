@@ -1,3 +1,5 @@
+#!/bin/python
+
 import helpers, defs
 
 import qbittorrentapi
