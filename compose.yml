@@ -1,0 +1,12 @@
+services:
+  qbt-sync:
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+
+
+networks:
+  traefik:
+    external: true
