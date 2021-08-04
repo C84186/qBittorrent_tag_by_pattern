@@ -1,7 +1,7 @@
 #!/bin/sh
 
 while true; do
-  python /app/synchronize_cat_tags.py
+  python "/app/$2"
   echo "Waiting $1 seconds..."
   sleep "$1"
 done

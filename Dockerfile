@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt && chmod +x /app/synchronize_
 ADD ./helpers.py ./defs.py ./synchronize_cat_tags.py /app/
 
 ENTRYPOINT [ "/app/synchronize_entrypoint.sh" ] 
-CMD ["60"]
+CMD [ "60", "synchronize_cat_tags.py" ]
