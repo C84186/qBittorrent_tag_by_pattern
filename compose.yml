@@ -1,5 +1,6 @@
 services:
   qbt-sync:
+    restart: unless-stopped
     build: .
     networks:
       - traefik
