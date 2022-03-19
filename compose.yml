@@ -6,7 +6,7 @@ services:
       - traefik
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
-
+      - "./tags.yml:/app/tags.yml:ro"
 
 networks:
   traefik:
