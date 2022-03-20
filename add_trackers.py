@@ -1,6 +1,6 @@
 import helpers, defs
 import logging, typing
-
+import requests as rq
 import qbittorrentapi
 
 from qbittorrentapi.torrents import TorrentInfoList, TorrentDictionary
@@ -36,8 +36,11 @@ def add_tracker_list(torrents : TorrentList_t, tracker_list : typing.List[str]):
 
 def read_tracker_list(path : defs.pathlike_hint = "./trackerslist/trackers_best.txt"):
     out = []
-    with open(path) as f:
-        out = f.readlines()
+    #  with open(path) as f:
+        #  out = f.readlines()
+
+    data = rq.get('https://cdn.jsdelivr.net/gh/ngosang/trackerslist@master/trackers_best.txt')
+    out = data.text.split()
 
     out = [line.strip() for line in out if line.strip()]
     L.info(out)
