@@ -5,7 +5,7 @@ import qbittorrentapi
 
 from qbittorrentapi.torrents import TorrentInfoList, TorrentDictionary
 
-dry_run = True
+dry_run = False 
 
 TorrentList_t = typing.Union[typing.List[TorrentDictionary], TorrentInfoList]
 L = logging.getLogger(__name__)
