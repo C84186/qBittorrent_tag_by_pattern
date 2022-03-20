@@ -18,7 +18,8 @@ def add_tracker_list_single(torrent : TorrentDictionary, tracker_list: typing.Li
     torrent_trackers = [tracker["url"] for tracker in torrent_trackers if "url" in tracker]
     to_add = [tracker for tracker in tracker_list if not tracker in torrent_trackers]
 
-    L.info(f"Adding {len(to_add)} trackers for {torrent.name}")
+    if len(to_add):
+        L.info(f"Addin:g {len(to_add)} trackers for {torrent.name}")
 
     # Add trackers & tag the torrent 
     if not dry_run:
