@@ -7,7 +7,14 @@ services:
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
       - "./tags.yml:/app/tags.yml:ro"
-
+  qbt-trackers:
+    restart: unless-stopped
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+    command: ["3600", "add_trackers.py"]
 networks:
   traefik:
     external: true
