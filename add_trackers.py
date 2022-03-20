@@ -51,3 +51,20 @@ def find_trackerless(torrents : TorrentList_t):
 
         if is_trackerless: out.append(torrent)
     return out
+
+
+def main():
+    logging.basicConfig(level = logging.INFO)
+    qbt = helpers.connect_client() 
+
+    all_torrents = qbt.torrents_info()
+    tagged_torrents = helpers.filter_for_tags(all_torrents, has_tags = [defs.tag_tracker_managed])
+
+    L.info(f"Number of torrents to process: {len(tagged_torrents)}")
+
+    tracker_list = read_tracker_list()
+
+    add_tracker_list(tagged_torrents, tracker_list)
+
+if __name__ == "__main__":
+    main()
