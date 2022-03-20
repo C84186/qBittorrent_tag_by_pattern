@@ -24,3 +24,5 @@ tag_category = {
     "set_prefix"  : "_SET_",
     "uncat" : ""
 }
+
+tag_tracker_managed = '_TRACKERLIST_MANAGED'

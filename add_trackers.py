@@ -16,35 +16,25 @@ def add_tracker_list_single(torrent : TorrentDictionary, tracker_list: typing.Li
     torrent_trackers = torrent.trackers
     
     torrent_trackers = [tracker["url"] for tracker in torrent_trackers if "url" in tracker]
+    to_add = [tracker for tracker in tracker_list if not tracker in torrent_trackers]
 
-    remove_trackers = False
-    placeholder_idx = -1
-    remove_trackers =  defs.placeholder_tracker in torrent_trackers
-
-    if remove_trackers:
-        placeholder_idx = torrent_trackers.index(defs.placeholder_tracker)
-
-        L.info(f"{torrent.name}: Found placeholder at {placeholder_idx} of {len(torrent_trackers)}")
-        # remove everything after placeholder (if not found, remove nothing)
-        # get a list of urls
-        to_rm = torrent_trackers[placeholder_idx:-1]
-        L.info(f"Removing {len(to_rm)}:  {to_rm}")
-        #  to_rm = [tracker["url"] for tracker in to_rm if "url" in tracker]
-
-        to_rm = [defs.placeholder_tracker] + to_rm
-
-        if not dry_run:
-            torrent.remove_trackers(urls = to_rm)
-
-    # Now can readd trackers
-    tracker_list = [defs.placeholder_tracker] + tracker_list
+    L.info(f"Adding {len(to_add)} trackers for {torrent.name}")
     
-    if not dry_run:
-        torrent.add_trackers(urls = tracker_list)
-        torrent.reannounce()
+    torrent_tags = { tag.strip() for tag in torrent.tags.split(',') }
 
+    # Add trackers & tag the torrent 
+    if not dry_run:
+
+        if to_add:
+            torrent.add_trackers(urls = to_add)
+            torrent.reannounce()
+
+        if not defs.tag_tracker_managed in torrent_tags:
+            L.info(f"Adding {defs.tag_tracker_managed} to {torrent.name}")
+            torrent.add_tags([defs.tag_tracker_managed])
 
 def add_tracker_list(torrents : TorrentList_t, tracker_list : typing.List[str]):
+    L.info(f"Processing list of {len(torrents)}")
     for torrent in torrents:
         add_tracker_list_single(torrent, tracker_list)
 
