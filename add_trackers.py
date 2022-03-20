@@ -19,8 +19,6 @@ def add_tracker_list_single(torrent : TorrentDictionary, tracker_list: typing.Li
     to_add = [tracker for tracker in tracker_list if not tracker in torrent_trackers]
 
     L.info(f"Adding {len(to_add)} trackers for {torrent.name}")
-    
-    torrent_tags = { tag.strip() for tag in torrent.tags.split(',') }
 
     # Add trackers & tag the torrent 
     if not dry_run:
@@ -29,9 +27,6 @@ def add_tracker_list_single(torrent : TorrentDictionary, tracker_list: typing.Li
             torrent.add_trackers(urls = to_add)
             torrent.reannounce()
 
-        if not defs.tag_tracker_managed in torrent_tags:
-            L.info(f"Adding {defs.tag_tracker_managed} to {torrent.name}")
-            torrent.add_tags([defs.tag_tracker_managed])
 
 def add_tracker_list(torrents : TorrentList_t, tracker_list : typing.List[str]):
     L.info(f"Processing list of {len(torrents)}")
