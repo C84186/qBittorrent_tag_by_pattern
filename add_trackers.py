@@ -27,9 +27,9 @@ def add_tracker_list_single(torrent : TorrentDictionary, tracker_list: typing.Li
         L.info(f"{torrent.name}: Found placeholder at {placeholder_idx} of {len(torrent_trackers)}")
         # remove everything after placeholder (if not found, remove nothing)
         # get a list of urls
-        to_rm = tracker_list[placeholder_idx:-1]
+        to_rm = torrent_trackers[placeholder_idx:-1]
         L.info(f"Removing {len(to_rm)}:  {to_rm}")
-        to_rm = [tracker["url"] for tracker in to_rm if "url" in tracker]
+        #  to_rm = [tracker["url"] for tracker in to_rm if "url" in tracker]
 
         to_rm = [defs.placeholder_tracker] + to_rm
 
