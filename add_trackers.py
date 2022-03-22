@@ -1,5 +1,7 @@
 import helpers, defs
-import logging, typing
+import logging, typing, time
+from pathlib import Path
+
 import requests as rq
 import qbittorrentapi
 
@@ -34,14 +36,45 @@ def add_tracker_list(torrents : TorrentList_t, tracker_list : typing.List[str]):
     for torrent in torrents:
         add_tracker_list_single(torrent, tracker_list)
 
-
-def read_tracker_list(path : defs.pathlike_hint = "./trackerslist/trackers_best.txt"):
-    out = []
-    #  with open(path) as f:
-        #  out = f.readlines()
-
+def save_tracker_list(path: defs.pathlike_hint):
     data = rq.get('https://cdn.jsdelivr.net/gh/ngosang/trackerslist@master/trackers_best.txt')
-    out = data.text.split()
+    with open(path, 'w') as f:
+        f.write(data.text)
+
+def should_download_tracker_file(path: defs.pathlike_hint): 
+    path = Path(path)
+    
+    file_exists = path.is_file()
+
+    if not file_exists:
+        L.info("Tracker file not found, downloading!")
+        return True
+
+    file_mtime = path.stat().st_mtime
+    current_time = time.time()
+
+    file_hours = (current_time - file_mtime) / 3600
+    
+    file_older_than_day = file_hours >= 24
+
+    if file_older_than_day:
+        L.info(f"Tracker file is {file_hours} old, download!")
+
+    return file_older_than_day
+
+def read_tracker_list(path : defs.pathlike_hint = "/app/trackerslist/trackers_best.txt"):
+
+
+
+    should_download = should_download_tracker_file(path) 
+
+    if should_download:
+        save_tracker_list(path)
+
+    
+    out = []
+      with open(path) as f:
+          out = f.readlines()
 
     out = [line.strip() for line in out if line.strip()]
     L.info(out)
