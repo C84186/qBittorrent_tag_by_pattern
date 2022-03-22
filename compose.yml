@@ -14,10 +14,7 @@ services:
       - traefik
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
-      - "trackerlist:/app/trackerlist/"
     command: ["60", "add_trackers.py"]
-volumes:
-  trackerlist:
 
 networks:
   traefik:
