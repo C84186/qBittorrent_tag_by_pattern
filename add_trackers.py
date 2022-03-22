@@ -62,7 +62,7 @@ def should_download_tracker_file(path: defs.pathlike_hint):
 
     return file_older_than_day
 
-def read_tracker_list(path : defs.pathlike_hint = "/app/trackerslist/trackers_best.txt"):
+def read_tracker_list(path : defs.pathlike_hint = "/app/trackers_best.txt"):
 
 
 
@@ -73,8 +73,8 @@ def read_tracker_list(path : defs.pathlike_hint = "/app/trackerslist/trackers_be
 
     
     out = []
-      with open(path) as f:
-          out = f.readlines()
+    with open(path) as f:
+      out = f.readlines()
 
     out = [line.strip() for line in out if line.strip()]
     L.info(out)
