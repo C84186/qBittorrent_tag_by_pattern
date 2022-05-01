@@ -89,10 +89,26 @@ def find_trackerless(torrents : TorrentList_t):
         if is_trackerless: out.append(torrent)
     return out
 
+def untag_completed_torrents(qbt: qbittorrentapi.Client):
+    completed_torrents = qbt.torrents_info(status_filter="completed")
+    tagged_torrents = helpers.filter_for_tags(completed_torrents, has_tags = [defs.tag_tracker_managed])
+
+    torrent_hashes = [t.hash for t in tagged_torrents]
+    if dry_run:
+        L.info(f"Would have removed {defs.tag_tracker_managed} from {len(torrent_hashes)} due to being complete")
+        return
+
+    L.info(f"Will remove {defs.tag_tracker_managed} from {len(torrent_hashes)} due to being complete")
+    if tagged_torrents:
+        torrent_hashes = [t.hash for t in tagged_torrents]
+        qbt.torrents_remove_tags(torrent_hashes = torrent_hashes, tags = [defs.tag_tracker_managed])
+        qbt.torrents_add_tags(torrent_hashes = torrent_hashes, tags = [defs.tag_tracker_was_managed])
 
 def main():
     logging.basicConfig(level = logging.INFO)
     qbt = helpers.connect_client() 
+
+    untag_completed_torrents(qbt)
 
     all_torrents = qbt.torrents_info()
     tagged_torrents = helpers.filter_for_tags(all_torrents, has_tags = [defs.tag_tracker_managed])

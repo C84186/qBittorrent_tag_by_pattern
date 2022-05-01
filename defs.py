@@ -26,3 +26,4 @@ tag_category = {
 }
 
 tag_tracker_managed = '_TRACKERLIST_MANAGED'
+tag_tracker_was_managed = '_TRACKERLIST_WAS_MANAGED'
