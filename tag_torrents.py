@@ -119,9 +119,10 @@ def tag_torrents(torrent_list, qbt_client):
 
         if not dry_run and len(current_tags):
             existing_tags = set(torrent['tags'])
+            tags_to_add = current_tags.difference(existing_tags)
 
-            if current_tags != existing_tags:
-                torrent.add_tags(list(current_tags))
+            if tags_to_add:
+                torrent.add_tags(list(tags_to_add))
 
         if not len(current_tags):
             paths = [Path(x['name']).name for x in current['files']]
