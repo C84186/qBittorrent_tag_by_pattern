@@ -6,7 +6,6 @@ services:
       - traefik
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
-      - "./tags.yml:/app/tags.yml:ro"
   qbt-trackers:
     restart: unless-stopped
     build: .
@@ -15,6 +14,15 @@ services:
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
     command: ["60", "add_trackers.py"]
+  qbt-tagger:
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+      - "./tags.yml:/app/tags.yml:ro"
+    command: ["600", "tag_torrents.py"]            
+
 
 networks:
   traefik:
