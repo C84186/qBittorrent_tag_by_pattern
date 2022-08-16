@@ -1,5 +1,6 @@
 # User credentials
 
+_user_credentials*.yml
 .user_credentials.yml
 
 # Byte-compiled / optimized / DLL files
