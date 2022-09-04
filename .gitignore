@@ -3,6 +3,10 @@
 _user_credentials*.yml
 .user_credentials.yml
 
+# Tags
+
+_tags/**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
