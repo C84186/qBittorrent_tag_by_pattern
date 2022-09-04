@@ -23,6 +23,21 @@ services:
       - "./tags.yml:/app/tags.yml:ro"
     command: ["600", "tag_torrents.py"]            
 
+  qbt-sync2:
+    restart: unless-stopped
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
+  qbt-trackers2:
+    restart: unless-stopped
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
+    command: ["60", "add_trackers.py"]
 
 networks:
   traefik:
