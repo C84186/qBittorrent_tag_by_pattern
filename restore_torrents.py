@@ -36,7 +36,7 @@ def add_torrents_to_client(torrents_with_broken_frs : list, qbt_client : qbittor
 
     # Add in chunks to avoid opening too many files at once
     for chunk in helpers.chunks(torrents_with_broken_frs, 1000):
-        if False: 
+        if True: 
             qbt_client.torrents.add(torrent_files = chunk, tags = [to_restore_tag], is_paused = True)
 
         chunk_hashes = [torrent_path.stem for torrent_path in chunk]
