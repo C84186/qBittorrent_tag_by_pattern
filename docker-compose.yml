@@ -1,12 +1,12 @@
 services:
-  qbt-sync:
+  1_sync_cats:
     restart: unless-stopped
     build: .
     networks:
       - traefik
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
-  qbt-trackers:
+  1_trackerlist:
     restart: unless-stopped
     build: .
     networks:
@@ -14,23 +14,23 @@ services:
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
     command: ["60", "add_trackers.py"]
-  qbt-tagger:
+  1_autotag:
     build: .
     networks:
       - traefik
     volumes:
       - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
-      - "./tags.yml:/app/tags.yml:ro"
+      - "./_tags/tags_operational.yml:/app/tags.yml:ro"
     command: ["600", "tag_torrents.py"]            
 
-  qbt-sync2:
+  2_sync_cats:
     restart: unless-stopped
     build: .
     networks:
       - traefik
     volumes:
       - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
-  qbt-trackers2:
+  2_trackerlist:
     restart: unless-stopped
     build: .
     networks:
