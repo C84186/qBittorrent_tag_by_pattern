@@ -27,7 +27,7 @@ def find_empty_fastresumes(bt_backup_p : pathlike_hint = bt_backup_p) -> list:
             if torrent_path.exists() and torrent_path.stat().st_size != 0: out.append(torrent_path)
     return out
 
-def add_torrents_to_client(torrents_with_broken_frs : list, qbt_client : qbittorrentapi.client.Client):
+def add_torrents_to_client(torrents_with_broken_frs : list, qbt_client : qbittorrentapi.client.Client) -> list:
     """
     Do this paused
     """
@@ -45,7 +45,9 @@ def add_torrents_to_client(torrents_with_broken_frs : list, qbt_client : qbittor
     new_hashes = [torrent_path.stem for torrent_path in torrents_with_broken_frs]
     
     new_torrents = qbt_client.torrents_info(torrent_hashes = new_hashes)
-    tag_torrents.tag_torrents(new_torrents, qbt_client)
+    # TODO: Get proper type hint
+    # tag_torrents.tag_torrents(new_torrents, qbt_client)
+    return new_torrents
 
 if __name__ == "__main__":
     qbt_client = helpers.connect_client(credentials_path)
