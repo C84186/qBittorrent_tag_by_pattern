@@ -38,6 +38,15 @@ services:
     volumes:
       - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
     command: ["60", "add_trackers.py"]
+  2_autotag:
+    restart: unless-stopped
+    build: .
+    networks:
+      - traefik
+    volumes:
+      - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
+      - "./_tags/tags_operational.yml:/app/tags.yml:ro"
+    command: ["600", "tag_torrents.py"]
 
 networks:
   traefik:
