@@ -5,21 +5,21 @@ services:
     networks:
       - traefik
     volumes:
-      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+      - "./_user_credentials_1.yml:/app/.user_credentials.yml:ro"
   1_trackerlist:
     restart: unless-stopped
     build: .
     networks:
       - traefik
     volumes:
-      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+      - "./_user_credentials_1.yml:/app/.user_credentials.yml:ro"
     command: ["60", "add_trackers.py"]
   1_autotag:
     build: .
     networks:
       - traefik
     volumes:
-      - "./.user_credentials.yml:/app/.user_credentials.yml:ro"
+      - "./_user_credentials_1.yml:/app/.user_credentials.yml:ro"
       - "./_tags/tags_operational.yml:/app/tags.yml:ro"
     command: ["600", "tag_torrents.py"]            
 
