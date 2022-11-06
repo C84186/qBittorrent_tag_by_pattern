@@ -1,4 +1,4 @@
-import helpers, defs, paths, tag_torrents
+import helpers, defs, paths
 from defs import pathlike_hint
 
 import qbittorrentapi, yaml, progressbar
