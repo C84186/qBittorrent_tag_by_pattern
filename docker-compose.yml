@@ -47,6 +47,9 @@ services:
       - "./_user_credentials_2.yml:/app/.user_credentials.yml:ro"
       - "./_tags/tags_operational.yml:/app/tags.yml:ro"
     command: ["600", "tag_torrents.py"]
+    logging:
+      options:
+        max-size: "2048m"
 
 networks:
   traefik:
