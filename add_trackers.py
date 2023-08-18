@@ -77,7 +77,10 @@ def read_tracker_list(path : defs.pathlike_hint = "/app/trackers_best.txt"):
       out = f.readlines()
 
     out = [line.strip() for line in out if line.strip()]
-    L.info(out)
+
+    if should_download:
+        L.info(out)
+
     return out
 
 def find_trackerless(torrents : TorrentList_t):
